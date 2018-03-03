@@ -15,11 +15,6 @@
         <relativePath>../</relativePath>
         <version>1.2.0</version>
     </parent>
-    
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -31,36 +26,4 @@
             <artifactId>spring-amqp</artifactId>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>Maven Central</id>
-            <name>Central Maven Repository</name>
-            <url>http://repo1.maven.org/maven2/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-snapshot</id>
-            <name>Spring Maven SNAPSHOT Repository</name>
-            <url>http://repo.springsource.org/libs-snapshot</url>
-        </repository>
-        <repository>
-            <id>spring-repository</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-snapshots</id>
-            <url>http://repo.spring.io/snapshot</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>spring-milestones</id>
-            <url>http://repo.spring.io/milestone</url>
-        </pluginRepository>
-    </pluginRepositories>
-
 </project>
