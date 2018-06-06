@@ -6,21 +6,30 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.evoila.cf.model.enums.DestinationType;
 import de.evoila.cf.model.interfaces.SwiftConfig;
 
-
 public class FileDestination implements SwiftConfig {
 
     private String authUrl;
+
     private String username;
+
     @JsonProperty()
     private String password;
+
     private String domain;
+
     private String containerName;
+
     private String projectName;
+
     private DestinationType type;
+
     private String name;
+
     private String instanceId;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String filename;
+
     private String id;
 
     public String getInstanceId () {
@@ -70,10 +79,12 @@ public class FileDestination implements SwiftConfig {
     public void setUsername (String username) {
         this.username = username;
     }
+
     @JsonIgnore
     public String getPassword () {
         return password;
     }
+
     @JsonProperty("password")
     public void setPassword (String password) {
         this.password = password;

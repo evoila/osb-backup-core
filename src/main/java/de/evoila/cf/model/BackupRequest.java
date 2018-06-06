@@ -5,15 +5,16 @@ package de.evoila.cf.model;
  */
 public class BackupRequest {
 
-    private DatabaseCredential source;
+    private BackupPlan plan;
+
     private String destinationId;
 
-    public DatabaseCredential getSource() {
-        return source;
+    public BackupPlan getPlan() {
+        return plan;
     }
 
-    public void setSource (DatabaseCredential source) {
-        this.source = source;
+    public void setPlan(BackupPlan plan) {
+        this.plan = plan;
     }
 
     public void setDestinationId (String destinationId) {

@@ -13,15 +13,22 @@ import java.util.List;
  */
 public class BackupJob {
 
-
   public static final String BACKUP_JOB = "Backup Job";
+
   public static final String RESTORE_JOB = "Restore Job";
+
   private String id;
+
   private Date startDate;
+
   private String instanceId;
+
   private JobStatus status;
+
   private String jobType;
+
   private BackupDestination destination;
+
   private List<String> logs;
 
   public String getId () {
