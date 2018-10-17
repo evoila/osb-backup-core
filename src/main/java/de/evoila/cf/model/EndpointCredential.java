@@ -1,6 +1,6 @@
 package de.evoila.cf.model;
 
-import de.evoila.cf.model.enums.DatabaseType;
+import de.evoila.cf.model.enums.BackupType;
 
 public class EndpointCredential {
 
@@ -14,7 +14,7 @@ public class EndpointCredential {
 
     String password;
 
-    DatabaseType type;
+    BackupType type;
 
     public String getServiceInstanceId() {
         return serviceInstanceId;
@@ -56,16 +56,16 @@ public class EndpointCredential {
         this.password = password;
     }
 
-    public DatabaseType getType() {
+    public BackupType getType() {
         return type;
     }
 
-    public void setType(DatabaseType type) {
+    public void setType(BackupType type) {
         this.type = type;
     }
 
     public void setType(String type) {
-        this.type = DatabaseType.valueOf(type);
+        this.type = BackupType.valueOf(type);
     }
 
 }

@@ -132,7 +132,7 @@ public class BackupJob {
     }
 
     private BackupDestination (FileDestination destination) {
-      setType(DestinationType.Swift);
+      setType(DestinationType.SWIFT);
       setProject(destination.getProjectName());
       setContainer(destination.getContainerName());
       setFilename(destination.getFilename());
