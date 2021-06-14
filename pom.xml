@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>de.evoila.cf.broker</groupId>
-    <artifactId>backup-model</artifactId>
+    <artifactId>backup-parent</artifactId>
+    <packaging>pom</packaging>
+    <name>backup-parent</name>
     <version>1.2.0</version>
-    <packaging>jar</packaging>
-    <name>backup-model</name>
 
     <parent>
         <groupId>de.evoila.cf.broker</groupId>
@@ -16,14 +16,12 @@
         <version>1.2.0</version>
     </parent>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.amqp</groupId>
-            <artifactId>spring-amqp</artifactId>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>osb-backup-model</module>
+    </modules>
+
+    <properties>
+        <persistence.version>1.2.0</persistence.version>
+        <parent.version>1.2.0</parent.version>
+    </properties>
 </project>
