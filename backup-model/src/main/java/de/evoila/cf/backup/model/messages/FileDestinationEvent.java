@@ -1,6 +1,7 @@
 package de.evoila.cf.backup.model.messages;
 
 import de.evoila.cf.backup.model.api.file.FileDestination;
+import de.evoila.cf.backup.model.enums.Operation;
 import de.evoila.cf.broker.model.ServiceInstance;
 
 public class FileDestinationEvent {
@@ -58,11 +59,5 @@ public class FileDestinationEvent {
 
     public void setNewDestination(FileDestination newDestination) {
         this.newDestination = newDestination;
-    }
-
-    enum Operation{
-        create,
-        update,
-        delete
     }
 }

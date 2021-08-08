@@ -1,14 +1,14 @@
 package de.evoila.cf.backup.repository;
 
-import de.evoila.cf.backup.service.BackupPlatformService;
+import de.evoila.cf.backup.service.BackupService;
 
 /**
  * @author Patrick Weber.
  */
 public interface BackupPlatformRepository {
 
-	void addBackupPlatform(String platform, BackupPlatformService platformService);
+	void addBackupPlatform(String platform, BackupService platformService);
 
-	BackupPlatformService getBackupPlatformService(String platform);
+	BackupService getBackupPlatformService(String platform);
 
 }

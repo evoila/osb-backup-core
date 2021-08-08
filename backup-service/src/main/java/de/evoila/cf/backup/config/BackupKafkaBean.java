@@ -7,8 +7,42 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = "kafka.backup")
-@ConditionalOnProperty(prefix = "kafka.backup", name = {"group-id", "topic-prefix"})
+@ConditionalOnProperty(prefix = "kafka.backup", name = {"group-id","partition","replication","retention"})
 public class BackupKafkaBean {
     String groupId;
-    String topicPrefix;
+    int partition;
+    int replication;
+    int retention;
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public int getPartition() {
+        return partition;
+    }
+
+    public void setPartition(int partition) {
+        this.partition = partition;
+    }
+
+    public int getReplication() {
+        return replication;
+    }
+
+    public void setReplication(int replication) {
+        this.replication = replication;
+    }
+
+    public int getRetention() {
+        return retention;
+    }
+
+    public void setRetention(int retention) {
+        this.retention = retention;
+    }
 }

@@ -20,6 +20,7 @@
         <module>backup-model</module>
         <module>backup-service</module>
         <module>backup-manager</module>
+        <module>backup-file-clients</module>
     </modules>
 
     <properties>

@@ -1,16 +1,16 @@
 package de.evoila.cf.backup.service;
 
+import de.evoila.cf.backup.config.BackupKafkaBean;
 import de.evoila.cf.backup.exception.BackupException;
 import de.evoila.cf.backup.model.agent.AbstractRequest;
-import de.evoila.cf.backup.model.agent.AgentBackupRequest;
-import de.evoila.cf.backup.model.agent.AgentRestoreRequest;
-import de.evoila.cf.backup.model.api.AbstractJob;
+import de.evoila.cf.backup.model.agent.BackupRequestEvent;
+import de.evoila.cf.backup.model.agent.RestoreRequestEvent;
 import de.evoila.cf.backup.model.api.BackupJob;
 import de.evoila.cf.backup.model.api.BackupPlan;
-import de.evoila.cf.backup.model.api.RestoreJob;
-import de.evoila.cf.backup.model.api.request.BackupRequest;
-import org.springframework.beans.factory.annotation.Qualifier;
+import de.evoila.cf.broker.model.ServiceInstance;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.kafka.config.TopicBuilder;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -19,35 +19,52 @@ import org.springframework.stereotype.Component;
 public class AbstractRequestProducerService {
     KafkaTemplate<String, AbstractRequest> abstractRequestKafkaTemplate;
     CredentialService credentialService;
+    BackupKafkaBean backupKafkaBean;
+    KafkaAdmin kafkaAdmin;
 
-    AbstractRequestProducerService(KafkaTemplate<String, AbstractRequest> abstractRequestKafkaTemplate, CredentialService credentialService){
+    AbstractRequestProducerService(KafkaTemplate<String, AbstractRequest> abstractRequestKafkaTemplate,
+                                   CredentialService credentialService,
+                                   BackupKafkaBean backupKafkaBean,
+                                   KafkaAdmin kafkaAdmin) {
         this.abstractRequestKafkaTemplate = abstractRequestKafkaTemplate;
         this.credentialService = credentialService;
+        this.backupKafkaBean = backupKafkaBean;
+        this.kafkaAdmin = kafkaAdmin;
     }
 
-    public void backup(String topic, BackupPlan backupPlan) throws BackupException {
-        AgentBackupRequest agentBackupRequest = new AgentBackupRequest(backupPlan.getId().toString(),
+    private String createTopic(ServiceInstance serviceInstance){
+        String topic ="Backup-JobRequest-" + serviceInstance.getServiceDefinitionId().replace("-", "") + "-" + serviceInstance.getId().replace("-","");
+        kafkaAdmin.createOrModifyTopics(TopicBuilder.name(topic)
+                .config("retention.ms", Integer.toString(backupKafkaBean.getRetention()))
+                .partitions(backupKafkaBean.getPartition())
+                .replicas(backupKafkaBean.getReplication())
+                .build());
+        return  topic;
+    }
+
+    public void backup(BackupPlan backupPlan) throws BackupException {
+        ServiceInstance serviceInstance = backupPlan.getServiceInstance();
+        BackupRequestEvent backupRequestEvent = new BackupRequestEvent(backupPlan.getId().toString(),
                 backupPlan.isCompression(),
                 backupPlan.getPrivateKey(),
                 backupPlan.getFileDestination(),
                 credentialService.getCredentials(backupPlan.getServiceInstance()));
-        abstractRequestKafkaTemplate.send("JobRequest-" + topic,
+        abstractRequestKafkaTemplate.send(createTopic(serviceInstance),
                 backupPlan.getId().toString(),
-                agentBackupRequest);
+                backupRequestEvent);
     }
 
-    public void restore(String topic, BackupPlan backupPlan) throws BackupException {
-        AgentRestoreRequest agentRestoreRequest = new AgentRestoreRequest(backupPlan.getId().toString(),
+    public void restore(BackupPlan backupPlan) throws BackupException {
+        ServiceInstance serviceInstance = backupPlan.getServiceInstance();
+        RestoreRequestEvent restoreRequestEvent = new RestoreRequestEvent(backupPlan.getId().toString(),
                 backupPlan.isCompression(),
                 backupPlan.getPrivateKey(),
                 backupPlan.getFileDestination(),
                 credentialService.getCredentials(backupPlan.getServiceInstance()));
-        abstractRequestKafkaTemplate.send("JobRequest-" + topic,
+        abstractRequestKafkaTemplate.send(createTopic(serviceInstance),
                 backupPlan.getId().toString(),
-                agentRestoreRequest);
+                restoreRequestEvent);
     }
-
-
 
 
 }

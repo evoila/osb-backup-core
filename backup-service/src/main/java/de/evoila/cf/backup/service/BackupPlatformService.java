@@ -1,24 +1,22 @@
 package de.evoila.cf.backup.service;
 
-import de.evoila.cf.backup.model.messages.FileDestinationEvent;
+import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
 
-/**
- * @author Patrick Weber.
- *
- */
-public interface BackupPlatformService {
+@Component
+public class BackupPlatformService {
+    HashMap<String,BackupService> backupServiceMap;
 
-    /**
-     *
-     */
-    void registerCustomBackupPlatformService();
+    BackupPlatformService(List<BackupService> backupServiceList){
+        backupServiceMap = new  HashMap<String, BackupService>();
+        backupServiceList.forEach( backupService -> {
+            backupServiceMap.put(backupService.getPlatform(),backupService);
+        });
+    }
 
-    void backup();
-
-    void restore();
-
-    void changeFileDestination(FileDestinationEvent fileDestationEvent);
-
+    public BackupService getBackupPlatform(String platform){
+        return backupServiceMap.get(platform);
+    }
 }

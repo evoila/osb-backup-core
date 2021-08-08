@@ -2,6 +2,7 @@ package de.evoila.cf.backup.model.messages;
 
 import de.evoila.cf.backup.model.api.BackupPlan;
 import de.evoila.cf.broker.model.ServiceInstance;
+import de.evoila.cf.backup.model.enums.Operation;
 
 public class BackupPlanEvent {
 
@@ -59,11 +60,5 @@ public class BackupPlanEvent {
 
     public void setNewBackupPlan(BackupPlan newBackupPlan) {
         this.oldBackupPlan = newBackupPlan;
-    }
-
-    enum Operation{
-        create,
-        update,
-        delete
     }
 }

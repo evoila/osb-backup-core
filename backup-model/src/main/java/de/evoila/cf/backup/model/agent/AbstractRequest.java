@@ -1,9 +1,11 @@
 package de.evoila.cf.backup.model.agent;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import de.evoila.cf.backup.model.enums.OperationType;
 
 /**
  * @author Johannes Hiemer.
@@ -12,8 +14,8 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "operation", visible = true)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = AgentBackupRequest.class, name = "backup"),
-        @JsonSubTypes.Type(value = AgentRestoreRequest.class, name = "restore")
+        @JsonSubTypes.Type(value = BackupRequestEvent.class, name = "BACKUP"),
+        @JsonSubTypes.Type(value = RestoreRequestEvent.class, name = "RESTORE")
 })
 public class AbstractRequest {
 
@@ -24,7 +26,8 @@ public class AbstractRequest {
 
     protected String encryptionKey;
 
-    protected Operation operation;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    protected OperationType operation;
 
     public String getId() {
         return id;
@@ -50,17 +53,12 @@ public class AbstractRequest {
         this.encryptionKey = encryptionKey;
     }
 
-    public Operation getOperation() {
+    public OperationType getOperation() {
         return operation;
     }
 
-    public void setOperation(Operation operation) {
+    public void setOperation(OperationType operation) {
         this.operation = operation;
     }
 
-
-    public enum Operation{
-        backup,
-        restore
-    }
 }

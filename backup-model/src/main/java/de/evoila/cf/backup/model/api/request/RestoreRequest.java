@@ -9,16 +9,16 @@ import java.util.List;
  */
 public class RestoreRequest {
 
-    private BackupJob backupJob;
+    private BackupJob backupJobEvent;
 
     private List<RequestDetails> items;
 
     public BackupJob getBackupJob() {
-        return backupJob;
+        return backupJobEvent;
     }
 
-    public void setBackupJob(BackupJob backupJob) {
-        this.backupJob = backupJob;
+    public void setBackupJob(BackupJob backupJobEvent) {
+        this.backupJobEvent = backupJobEvent;
     }
 
     public List<RequestDetails> getItems() {
