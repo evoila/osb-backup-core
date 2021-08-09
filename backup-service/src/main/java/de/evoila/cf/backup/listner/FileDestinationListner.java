@@ -66,7 +66,7 @@ public class FileDestinationListner {
         }
 
         @KafkaListener(
-                topicPattern = "Backup-FileDestination-#{'${catalog.services.0.id}'.replace('-','')}-.*",
+                topicPattern = "Backup-FileDestination-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.catalogServiceIds(),\"|\")})-.*",
                 containerFactory = "fileDestinationKafkaListenerContainerFactory",
                 groupId = "${kafka.backup.group-id}"
         )

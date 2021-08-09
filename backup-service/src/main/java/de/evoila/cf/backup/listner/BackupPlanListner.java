@@ -65,7 +65,7 @@ public class BackupPlanListner {
         }
 
         @KafkaListener(
-                topicPattern = "Backup-Plan-#{'${catalog.services.0.id}'.replace('-','')}-.*",
+                topicPattern = "Backup-Plan-#(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.catalogServiceIds(),\"|\")})-.*",
                 containerFactory = "backupPlanKafkaListenerContainerFactory",
                 groupId = "${kafka.backup.group-id}"
         )

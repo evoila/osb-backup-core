@@ -7,12 +7,14 @@ import de.evoila.cf.backup.model.agent.RestoreRequestEvent;
 import de.evoila.cf.backup.model.api.AbstractJob;
 import de.evoila.cf.backup.model.enums.OperationType;
 import de.evoila.cf.backup.repository.BackupPlatformRepository;
+import de.evoila.cf.backup.service.BackupPlatformService;
 import de.evoila.cf.broker.exception.ServiceDefinitionDoesNotExistException;
 import de.evoila.cf.broker.exception.ServiceDefinitionPlanDoesNotExistException;
 import de.evoila.cf.broker.model.ServiceInstance;
 import de.evoila.cf.broker.model.catalog.plan.Plan;
 import de.evoila.cf.broker.repository.ServiceDefinitionRepository;
 import de.evoila.cf.broker.service.CatalogService;
+import de.evoila.cf.broker.service.impl.CatalogServiceImpl;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,23 +36,23 @@ import java.util.Map;
 
 @Component
 @ConditionalOnBean(BackupKafkaBean.class)
-@AutoConfigureAfter(CatalogService.class)
+@AutoConfigureAfter(CatalogServiceImpl.class)
 @EnableKafka
 public class AbstractRequestListner {
         private static final Logger log = LoggerFactory.getLogger(AbstractRequestListner.class);
         private KafkaProperties kafkaProperties;
-        private BackupPlatformRepository backupPlatformRepository;
+        private BackupPlatformService backupPlatformService;
         private ServiceDefinitionRepository serviceDefinitionRepository;
         public CatalogService catalogService;
 
         public AbstractRequestListner(KafkaProperties kafkaProperties,
-                                      BackupPlatformRepository backupPlatformRepository,
+                                      BackupPlatformService backupPlatformService,
                                       ServiceDefinitionRepository serviceDefinitionRepository,
                                       CatalogService catalogService) {
                 this.kafkaProperties = kafkaProperties;
                 this.serviceDefinitionRepository = serviceDefinitionRepository;
                 this.catalogService = catalogService;
-                this.backupPlatformRepository =backupPlatformRepository;
+                this.backupPlatformService = backupPlatformService;
         }
 
         @Bean
@@ -78,7 +80,7 @@ public class AbstractRequestListner {
         }
 
         @KafkaListener(
-                topicPattern = "Backup-JobRequest-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceIds(),\"|\")})-.*",
+                topicPattern = "Backup-JobRequest-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.catalogServiceIds(),\"|\")})-.*",
                 containerFactory = "abstractRequestKafkaListenerContainerFactory",
                 groupId = "${kafka.backup.group-id}"
         )
@@ -90,7 +92,7 @@ public class AbstractRequestListner {
                         serviceInstance = backupRequestEvent.getBackup().getServiceInstance();
                         try {
                                 plan = serviceDefinitionRepository.getPlan(serviceInstance.getServiceDefinitionId(),serviceInstance.getPlanId());
-                                backupPlatformRepository.getBackupPlatformService(plan.getMetadata().getBackup().getPlatform()).backup(backupRequestEvent, serviceInstance, plan);
+                                backupPlatformService.getBackupPlatform(plan.getMetadata().getBackup().getPlatform()).backup(backupRequestEvent, serviceInstance, plan);
                         } catch (ServiceDefinitionDoesNotExistException e) {
                                 e.printStackTrace();
                         } catch (ServiceDefinitionPlanDoesNotExistException e) {
@@ -101,7 +103,7 @@ public class AbstractRequestListner {
                         serviceInstance = restoreRequestEvent.getRestore().getServiceInstance();
                         try {
                                 plan = serviceDefinitionRepository.getPlan(serviceInstance.getServiceDefinitionId(),serviceInstance.getPlanId());
-                                backupPlatformRepository.getBackupPlatformService(plan.getMetadata().getBackup().getPlatform()).restore(restoreRequestEvent, serviceInstance, plan);
+                                backupPlatformService.getBackupPlatform(plan.getMetadata().getBackup().getPlatform()).restore(restoreRequestEvent, serviceInstance, plan);
                         } catch (ServiceDefinitionDoesNotExistException e) {
                                 e.printStackTrace();
                         } catch (ServiceDefinitionPlanDoesNotExistException e) {
