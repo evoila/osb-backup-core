@@ -1,6 +1,6 @@
-package producer;
+package de.evoila.cf.backup.producer;
 
-import de.evoila.cf.backup.model.messages.ServiceInstanceEvent;
+import de.evoila.cf.backup.model.messages.BackupCleanupResultEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
@@ -17,16 +17,16 @@ import java.util.Map;
 
 @Component
 @EnableKafka
-public class ServiceInstanceEventProducer {
-        private static final Logger log = LoggerFactory.getLogger(ServiceInstanceEventProducer.class);
+public class BackupCleanupResultEventProducer {
+        private static final Logger log = LoggerFactory.getLogger(BackupCleanupResultEventProducer.class);
         private KafkaProperties kafkaProperties;
 
-        public ServiceInstanceEventProducer(KafkaProperties kafkaProperties) {
+        public BackupCleanupResultEventProducer(KafkaProperties kafkaProperties) {
                 this.kafkaProperties = kafkaProperties;
         }
 
         @Bean
-        public Map<String, Object> serviceInstanceEventProducerConfigs() {
+        public Map<String, Object> backupCleanupEventProducerConfigs() {
                 Map<String, Object> props = kafkaProperties.buildProducerProperties();
                 props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
                         StringSerializer.class);
@@ -36,12 +36,12 @@ public class ServiceInstanceEventProducer {
         }
 
         @Bean
-        public DefaultKafkaProducerFactory<String, ServiceInstanceEvent> serviceInstanceEventProducerFactory() {
-                return new DefaultKafkaProducerFactory<>(serviceInstanceEventProducerConfigs());
+        public DefaultKafkaProducerFactory<String, BackupCleanupResultEvent> backupCleanupEventProducerFactory() {
+                return new DefaultKafkaProducerFactory<>(backupCleanupEventProducerConfigs());
         }
 
         @Bean
-        public KafkaTemplate<String, ServiceInstanceEvent> serviceInstanceEventKafkaTemplate() {
-                return new KafkaTemplate<>(serviceInstanceEventProducerFactory());
+        public KafkaTemplate<String, BackupCleanupResultEvent> backupCleanupEventKafkaTemplate() {
+                return new KafkaTemplate<>(backupCleanupEventProducerFactory());
         }
 }

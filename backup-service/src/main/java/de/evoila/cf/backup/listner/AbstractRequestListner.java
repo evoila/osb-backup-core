@@ -15,6 +15,7 @@ import de.evoila.cf.broker.model.catalog.plan.Plan;
 import de.evoila.cf.broker.repository.ServiceDefinitionRepository;
 import de.evoila.cf.broker.service.CatalogService;
 import de.evoila.cf.broker.service.impl.CatalogServiceImpl;
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +60,8 @@ public class AbstractRequestListner {
         public DefaultKafkaConsumerFactory<String, AbstractRequest> abstractRequestConsumerFactory() {
                 Map<String, Object> config = kafkaProperties.buildConsumerProperties();
                 config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-                config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+                config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+                config.put(CommonClientConfigs.METADATA_MAX_AGE_CONFIG,"30000");
                 config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
                 config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringDeserializer.class);
                 config.put(JsonDeserializer.VALUE_DEFAULT_TYPE,AbstractJob.class);
@@ -80,7 +82,7 @@ public class AbstractRequestListner {
         }
 
         @KafkaListener(
-                topicPattern = "Backup-JobRequest-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.catalogServiceIds(),\"|\")})-.*",
+                topicPattern = "Backup-JobRequest-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.getServiceIdsWithoutHyphen(),\"|\")})-.*",
                 containerFactory = "abstractRequestKafkaListenerContainerFactory",
                 groupId = "${kafka.backup.group-id}"
         )
@@ -97,6 +99,8 @@ public class AbstractRequestListner {
                                 e.printStackTrace();
                         } catch (ServiceDefinitionPlanDoesNotExistException e) {
                                 e.printStackTrace();
+                        } finally {
+                                ack.acknowledge();
                         }
                 }else if (abstractRequest.getOperation().equals(OperationType.RESTORE)) {
                         RestoreRequestEvent restoreRequestEvent = (RestoreRequestEvent)abstractRequest;
@@ -108,6 +112,8 @@ public class AbstractRequestListner {
                                 e.printStackTrace();
                         } catch (ServiceDefinitionPlanDoesNotExistException e) {
                                 e.printStackTrace();
+                        } finally {
+                                ack.acknowledge();
                         }
                 }
                 ack.acknowledge();

@@ -11,6 +11,8 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -20,14 +22,14 @@ public class KafkaTopics {
 
     KafkaProperties kafkaProperties;
     BackupKafkaBean backupKafkaBean;
-    String serviceId;
+    CatalogService catalogService;
 
     KafkaTopics(KafkaProperties kafkaProperties,
                 BackupKafkaBean backupKafkaBean,
                 CatalogService catalogService) {
         this.kafkaProperties = kafkaProperties;
         this.backupKafkaBean = backupKafkaBean;
-        this.serviceId = catalogService.getCatalog().getServices().get(0).getId().replace("-","");
+        this.catalogService = catalogService;
     }
 
     @Bean
@@ -37,21 +39,35 @@ public class KafkaTopics {
     }
 
     @Bean
-    public NewTopic serviceInstance() {
-        return TopicBuilder.name("FileDistination-" + serviceId)
-                .partitions(backupKafkaBean.getPartition())
-                .replicas(backupKafkaBean.getReplication())
-                .config("retention.ms", Integer.toString(backupKafkaBean.getRetention()))
-                .build();
+    public List<NewTopic> serviceInstance() {
+        List<NewTopic> newTopics = new ArrayList<NewTopic>();
+        for (String serviceId: catalogService.getServiceIdsWithoutHyphen()) {
+            newTopics.add(
+                    TopicBuilder.name("Backup-FileDistination-" + serviceId)
+                            .partitions(backupKafkaBean.getPartition())
+                            .replicas(backupKafkaBean.getReplication())
+                            .config("retention.ms", Integer.toString(backupKafkaBean.getRetention()))
+                            .build()
+            );
+        }
+        admin().createOrModifyTopics(newTopics.toArray(new NewTopic[]{}));
+        return newTopics;
     }
 
     @Bean
-    public NewTopic backupCleanupResponse() {
-        return TopicBuilder.name("BackupCleanupJob-" + serviceId)
-                .partitions(backupKafkaBean.getPartition())
-                .replicas(backupKafkaBean.getReplication())
-                .config("retention.ms", Integer.toString(backupKafkaBean.getRetention()))
-                .build();
+    public List<NewTopic> backupCleanupResponse() {
+        List<NewTopic> newTopics = new ArrayList<NewTopic>();
+        for (String serviceId: catalogService.getServiceIdsWithoutHyphen()) {
+            newTopics.add(
+                    TopicBuilder.name("Backup-CleanupJob-" + serviceId)
+                            .partitions(backupKafkaBean.getPartition())
+                            .replicas(backupKafkaBean.getReplication())
+                            .config("retention.ms", Integer.toString(backupKafkaBean.getRetention()))
+                            .build()
+            );
+        }
+        admin().createOrModifyTopics(newTopics.toArray(new NewTopic[]{}));
+        return newTopics;
     }
 
 }

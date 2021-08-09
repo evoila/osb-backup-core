@@ -36,7 +36,7 @@ public class BackupCleanupEventListner {
         public DefaultKafkaConsumerFactory<String, BackupCleanupResultEvent> backupCleanupEventConsumerFactory() {
                 Map<String, Object> config = kafkaProperties.buildConsumerProperties();
                 config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-                config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+                config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
                 config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
                 config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringDeserializer.class);
                 config.put(JsonDeserializer.VALUE_DEFAULT_TYPE,AbstractJob.class);

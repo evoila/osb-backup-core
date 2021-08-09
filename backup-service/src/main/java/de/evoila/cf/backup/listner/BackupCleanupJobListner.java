@@ -11,6 +11,7 @@ import de.evoila.cf.broker.exception.ServiceDefinitionPlanDoesNotExistException;
 import de.evoila.cf.broker.model.ServiceInstance;
 import de.evoila.cf.broker.model.catalog.plan.Plan;
 import de.evoila.cf.broker.repository.ServiceDefinitionRepository;
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +47,8 @@ public class BackupCleanupJobListner {
         public DefaultKafkaConsumerFactory<String, BackupCleanupRequestEvent> backupCleanupRequestConsumerFactory() {
                 Map<String, Object> config = kafkaProperties.buildConsumerProperties();
                 config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-                config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+                config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+                config.put(CommonClientConfigs.METADATA_MAX_AGE_CONFIG,"30000");
                 config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
                 config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringDeserializer.class);
                 config.put(JsonDeserializer.VALUE_DEFAULT_TYPE,AbstractJob.class);
@@ -67,7 +69,7 @@ public class BackupCleanupJobListner {
         }
 
         @KafkaListener(
-                topicPattern = "Backup-CleanupJob-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.catalogServiceIds(),\"|\")})-.*",
+                topicPattern = "Backup-CleanupJob-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.getServiceIdsWithoutHyphen(),\"|\")})-.*",
                 containerFactory = "backupCleanupRequestKafkaListenerContainerFactory",
                 groupId = "${kafka.backup.group-id}"
         )

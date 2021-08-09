@@ -14,6 +14,8 @@ import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @AutoConfigureAfter(BackupJob.class)
 public class AbstractRequestProducerService {
