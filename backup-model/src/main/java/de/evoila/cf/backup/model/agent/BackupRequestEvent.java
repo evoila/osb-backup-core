@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import de.evoila.cf.backup.model.api.endpoint.EndpointCredential;
 import de.evoila.cf.backup.model.api.file.FileDestination;
-
+import org.bson.types.ObjectId;
+import java.util.Map;
 /**
  * @author Johannes Hiemer.
  */
@@ -16,15 +17,18 @@ public class BackupRequestEvent extends AbstractRequest {
 
     private EndpointCredential backup;
 
+    private Map<String, String> files;
+
     public BackupRequestEvent() {}
 
-    public BackupRequestEvent(String id, boolean compression, String privateKey,
-                              FileDestination destination, EndpointCredential backup) {
+    public BackupRequestEvent(ObjectId id, boolean compression, String privateKey,
+                              FileDestination destination, EndpointCredential backup, Map<String,String> files) {
         this.id = id;
         this.destination = destination;
         this.backup = backup;
         this.compression = compression;
         this.encryptionKey = privateKey;
+        this.files = files;
     }
 
     public FileDestination getDestination() {
@@ -42,4 +46,5 @@ public class BackupRequestEvent extends AbstractRequest {
     public void setBackup(EndpointCredential backup) {
         this.backup = backup;
     }
+
 }

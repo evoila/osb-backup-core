@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import de.evoila.cf.backup.model.api.endpoint.EndpointCredential;
 import de.evoila.cf.backup.model.api.file.FileDestination;
+import org.bson.types.ObjectId;
+import java.util.Map;
 
 /**
  * @author Johannes Hiemer.
@@ -18,13 +20,14 @@ public class RestoreRequestEvent extends AbstractRequest {
 
     public RestoreRequestEvent() {}
 
-    public RestoreRequestEvent(String id, boolean compression, String privateKey,
-                               FileDestination destination, EndpointCredential restore) {
+    public RestoreRequestEvent(ObjectId id, boolean compression, String privateKey,
+                               FileDestination destination, EndpointCredential restore, Map<String, String> files) {
         this.id = id;
         this.destination = destination;
         this.restore = restore;
         this.compression = compression;
         this.encryptionKey = privateKey;
+        this.files = files;
     }
 
     public FileDestination getDestination() {
