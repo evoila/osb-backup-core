@@ -7,6 +7,9 @@ import de.evoila.cf.backup.model.agent.BackupRequestEvent;
 import de.evoila.cf.backup.model.agent.RestoreRequestEvent;
 import de.evoila.cf.backup.model.api.BackupJob;
 import de.evoila.cf.backup.model.api.BackupPlan;
+import de.evoila.cf.backup.model.api.RestoreJob;
+import de.evoila.cf.backup.model.api.request.RequestDetails;
+import de.evoila.cf.backup.model.api.request.RestoreRequest;
 import de.evoila.cf.broker.model.ServiceInstance;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.kafka.config.TopicBuilder;
@@ -15,6 +18,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @AutoConfigureAfter(BackupJob.class)
@@ -44,29 +49,44 @@ public class AbstractRequestProducerService {
         return  topic;
     }
 
-    public void backup(BackupPlan backupPlan) throws BackupException {
+    public void backup(BackupJob backupJob) throws BackupException {
+        BackupPlan backupPlan = backupJob.getBackupPlan();
         ServiceInstance serviceInstance = backupPlan.getServiceInstance();
-        BackupRequestEvent backupRequestEvent = new BackupRequestEvent(backupPlan.getId().toString(),
+        BackupRequestEvent backupRequestEvent = new BackupRequestEvent(backupJob.getId(),
                 backupPlan.isCompression(),
                 backupPlan.getPrivateKey(),
                 backupPlan.getFileDestination(),
-                credentialService.getCredentials(backupPlan.getServiceInstance()));
+                credentialService.getCredentials(backupPlan.getServiceInstance()),
+                backupJob.getIdAsString(),
+                convertItemListToMap(backupPlan.getItems())
+                );
         abstractRequestKafkaTemplate.send(createTopic(serviceInstance),
                 backupPlan.getId().toString(),
                 backupRequestEvent);
     }
 
-    public void restore(BackupPlan backupPlan) throws BackupException {
+    public void restore(RestoreJob restoreJob, RestoreRequest restoreRequest) throws BackupException {
+        BackupPlan backupPlan = restoreJob.getBackupPlan();
         ServiceInstance serviceInstance = backupPlan.getServiceInstance();
-        RestoreRequestEvent restoreRequestEvent = new RestoreRequestEvent(backupPlan.getId().toString(),
+        RestoreRequestEvent restoreRequestEvent = new RestoreRequestEvent(restoreJob.getId(),
                 backupPlan.isCompression(),
                 backupPlan.getPrivateKey(),
                 backupPlan.getFileDestination(),
-                credentialService.getCredentials(backupPlan.getServiceInstance()));
+                credentialService.getCredentials(backupPlan.getServiceInstance()),
+                restoreJob.getIdAsString(),
+                convertRestoreJobToItemMap(restoreRequest)
+                );
         abstractRequestKafkaTemplate.send(createTopic(serviceInstance),
                 backupPlan.getId().toString(),
                 restoreRequestEvent);
     }
 
 
+    private Map<String, String> convertItemListToMap(List<String> items){
+        return items.stream().collect(Collectors.toMap(item -> item, null));
+    }
+
+    private Map<String, String> convertRestoreJobToItemMap(RestoreRequest restoreRequest){
+       return restoreRequest.getItems().stream().collect(Collectors.toMap(RequestDetails::getItem, RequestDetails::getFilename));
+    }
 }

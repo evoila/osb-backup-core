@@ -29,7 +29,9 @@ public class AbstractRequest {
 
     protected String encryptionKey;
 
-    protected Map<String, String> files;
+    protected Map<String, String> items;
+
+    protected String filePath;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     protected OperationType operation;
@@ -66,13 +68,28 @@ public class AbstractRequest {
         this.operation = operation;
     }
 
-
-    public void setFiles(Map<String,String> files){
-        this.files = files;
+    public void setItems(Map<String, String> items) {
+        this.items = items;
     }
 
-    public Map<String,String> getFiles(){
-        return files;
+    public Map<String,String> getItems(){
+        return items;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        if(filePath.isEmpty()) {
+            this.filePath = filePath;
+        } else {
+            if (filePath.endsWith("/")) {
+                this.filePath = filePath;
+            } else {
+                this.filePath = filePath;
+            }
+        }
     }
 
 }

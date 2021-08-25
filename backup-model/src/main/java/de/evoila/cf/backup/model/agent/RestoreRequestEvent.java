@@ -21,13 +21,14 @@ public class RestoreRequestEvent extends AbstractRequest {
     public RestoreRequestEvent() {}
 
     public RestoreRequestEvent(ObjectId id, boolean compression, String privateKey,
-                               FileDestination destination, EndpointCredential restore, Map<String, String> files) {
+                               FileDestination destination, EndpointCredential restore, String filePath, Map<String, String> items) {
         this.id = id;
         this.destination = destination;
         this.restore = restore;
         this.compression = compression;
         this.encryptionKey = privateKey;
-        this.files = files;
+        this.filePath = filePath;
+        this.items = items;
     }
 
     public FileDestination getDestination() {

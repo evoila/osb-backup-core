@@ -22,13 +22,14 @@ public class BackupRequestEvent extends AbstractRequest {
     public BackupRequestEvent() {}
 
     public BackupRequestEvent(ObjectId id, boolean compression, String privateKey,
-                              FileDestination destination, EndpointCredential backup, Map<String,String> files) {
+                              FileDestination destination, EndpointCredential backup, String filePath, Map<String,String> items) {
         this.id = id;
         this.destination = destination;
         this.backup = backup;
         this.compression = compression;
         this.encryptionKey = privateKey;
-        this.files = files;
+        this.items = items;
+        this.filePath = filePath;
     }
 
     public FileDestination getDestination() {
