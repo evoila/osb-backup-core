@@ -3,7 +3,7 @@ package de.evoila.cf.backup.model.agent.response;
 /**
  * @author Johannes Hiemer.
  */
-public class RestoreResponseEvent extends AgentExecutionResponse {
+public class AgentRestoreResponse extends AgentExecutionResponse {
 
     private String preRestoreLockLog;
 

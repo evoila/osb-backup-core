@@ -52,7 +52,7 @@ public class AbstractRequestProducerService {
     public void backup(BackupJob backupJob) throws BackupException {
         BackupPlan backupPlan = backupJob.getBackupPlan();
         ServiceInstance serviceInstance = backupPlan.getServiceInstance();
-        BackupRequestEvent backupRequestEvent = new BackupRequestEvent(backupJob.getId(),
+        BackupRequestEvent backupRequestEvent = new BackupRequestEvent(backupJob,
                 backupPlan.isCompression(),
                 backupPlan.getPrivateKey(),
                 backupPlan.getFileDestination(),
@@ -68,7 +68,7 @@ public class AbstractRequestProducerService {
     public void restore(RestoreJob restoreJob, RestoreRequest restoreRequest) throws BackupException {
         BackupPlan backupPlan = restoreJob.getBackupPlan();
         ServiceInstance serviceInstance = backupPlan.getServiceInstance();
-        RestoreRequestEvent restoreRequestEvent = new RestoreRequestEvent(restoreJob.getId(),
+        RestoreRequestEvent restoreRequestEvent = new RestoreRequestEvent(restoreJob,
                 backupPlan.isCompression(),
                 backupPlan.getPrivateKey(),
                 backupPlan.getFileDestination(),
@@ -83,7 +83,7 @@ public class AbstractRequestProducerService {
 
 
     private Map<String, String> convertItemListToMap(List<String> items){
-        return items.stream().collect(Collectors.toMap(item -> item, null));
+        return items.stream().collect(Collectors.toMap(item -> item, item -> ""));
     }
 
     private Map<String, String> convertRestoreJobToItemMap(RestoreRequest restoreRequest){

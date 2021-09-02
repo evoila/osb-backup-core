@@ -2,6 +2,7 @@ package de.evoila.cf.backup.model.agent;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import de.evoila.cf.backup.model.api.RestoreJob;
 import de.evoila.cf.backup.model.api.endpoint.EndpointCredential;
 import de.evoila.cf.backup.model.api.file.FileDestination;
 import org.bson.types.ObjectId;
@@ -18,11 +19,13 @@ public class RestoreRequestEvent extends AbstractRequest {
 
     private EndpointCredential restore;
 
+    private RestoreJob restoreJob;
+
     public RestoreRequestEvent() {}
 
-    public RestoreRequestEvent(ObjectId id, boolean compression, String privateKey,
+    public RestoreRequestEvent(RestoreJob restoreJob, boolean compression, String privateKey,
                                FileDestination destination, EndpointCredential restore, String filePath, Map<String, String> items) {
-        this.id = id;
+        this.restoreJob = restoreJob;
         this.destination = destination;
         this.restore = restore;
         this.compression = compression;
@@ -45,5 +48,13 @@ public class RestoreRequestEvent extends AbstractRequest {
 
     public void setRestore(EndpointCredential restore) {
         this.restore = restore;
+    }
+
+    public RestoreJob getRestoreJob() {
+        return restoreJob;
+    }
+
+    public void setRestoreJob(RestoreJob restoreJob) {
+        this.restoreJob = restoreJob;
     }
 }

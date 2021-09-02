@@ -22,9 +22,6 @@ import java.util.Map;
 })
 public class AbstractRequest {
 
-
-    protected ObjectId id;
-
     protected  boolean compression;
 
     protected String encryptionKey;
@@ -35,14 +32,6 @@ public class AbstractRequest {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     protected OperationType operation;
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
 
     public boolean isCompression() {
         return compression;

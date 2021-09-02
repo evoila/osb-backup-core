@@ -81,6 +81,7 @@ public class AbstractRequestListner {
                 return factory;
         }
 
+
         @KafkaListener(
                 topicPattern = "Backup-JobRequest-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.getServiceIdsWithoutHyphen(),\"|\")})-.*",
                 containerFactory = "abstractRequestKafkaListenerContainerFactory",
