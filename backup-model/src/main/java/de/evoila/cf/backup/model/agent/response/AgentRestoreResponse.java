@@ -21,6 +21,19 @@ public class AgentRestoreResponse extends AgentExecutionResponse {
 
     private String postRestoreUnlockErrorLog;
 
+    AgentRestoreResponse(){
+
+    }
+
+    AgentRestoreResponse(AgentRestoreResponse agentRestoreResponse){
+        super(agentRestoreResponse);
+        this.restoreCleanupErrorLog = agentRestoreResponse.restoreCleanupErrorLog;
+        this.restoreLog = agentRestoreResponse.restoreLog;
+        this.restoreErrorLog = agentRestoreResponse.restoreErrorLog;
+        this.postRestoreUnlockErrorLog = agentRestoreResponse.postRestoreUnlockErrorLog;
+        this.postRestoreUnlockLog = agentRestoreResponse.postRestoreUnlockLog;
+    }
+
     public String getPreRestoreLockLog() {
         return preRestoreLockLog;
     }

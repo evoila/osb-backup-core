@@ -10,31 +10,31 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class AgentBackupResponse extends AgentExecutionResponse {
 
-    private String filenamePrefix;
+    private String filenamePrefix = "";
 
-    private String filename;
+    private String filename = "";
 
     private Filesize filesize;
 
-    private String preBackupLockLog;
+    private String preBackupLockLog = "";
 
-    private String preBackupLockErrorLog;
+    private String preBackupLockErrorLog = "";
 
-    private String preBackCheckLog;
+    private String preBackCheckLog = "";
 
-    private String preBackCheckErrorLog;
+    private String preBackCheckErrorLog = "";
 
-    private String backupLog;
+    private String backupLog = "";
 
-    private String backupErrorLog;
+    private String backupErrorLog = "";
 
-    private String backupCleanupLog;
+    private String backupCleanupLog = "";
 
-    private String backupCleanupErrorLog;
+    private String backupCleanupErrorLog = "";
 
-    private String postBackupUnlockLog;
+    private String postBackupUnlockLog = "";
 
-    private String postBackupUnlockErrorLog;
+    private String postBackupUnlockErrorLog = "";
 
     public class Filesize {
 
@@ -163,5 +163,25 @@ public class AgentBackupResponse extends AgentExecutionResponse {
 
     public void setPostBackupUnlockErrorLog(String postBackupUnlockErrorLog) {
         this.postBackupUnlockErrorLog = postBackupUnlockErrorLog;
+    }
+
+    AgentBackupResponse(){
+
+    }
+
+    AgentBackupResponse(AgentBackupResponse agentBackupResponse){
+        super(agentBackupResponse);
+        this.filename = agentBackupResponse.filename;
+        this.backupCleanupLog = agentBackupResponse.backupCleanupLog;
+        this.backupCleanupErrorLog = agentBackupResponse.backupCleanupErrorLog;
+        this.backupLog = agentBackupResponse.backupLog;
+        this.backupErrorLog = agentBackupResponse.backupErrorLog;
+        this.filenamePrefix = agentBackupResponse.getFilenamePrefix();
+        this.postBackupUnlockErrorLog = agentBackupResponse.postBackupUnlockErrorLog;
+        this.postBackupUnlockLog = agentBackupResponse.postBackupUnlockLog;
+        this.preBackCheckLog = agentBackupResponse.preBackCheckLog;
+        this.preBackCheckErrorLog = agentBackupResponse.preBackCheckErrorLog;
+        this.preBackupLockLog = agentBackupResponse.preBackupLockLog;
+        this.preBackupLockErrorLog = agentBackupResponse.preBackupLockErrorLog;
     }
 }

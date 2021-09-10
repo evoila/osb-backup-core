@@ -43,7 +43,7 @@ public class RestoreServiceManager extends AbstractServiceManager {
      * @param destination Location to restore the backup files from
      * @param items Database instances on the specified destination
      */
-    private void executeRestore(RestoreExecutorService restoreExecutorService, RestoreJob restoreJob, EndpointCredential endpointCredential,
+    public void executeRestore(RestoreExecutorService restoreExecutorService, RestoreJob restoreJob, EndpointCredential endpointCredential,
                                 FileDestination destination, List<RequestDetails> items) {
         try {
             log.info("Starting execution of Restore Job");

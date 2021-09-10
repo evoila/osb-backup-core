@@ -1,6 +1,11 @@
 package de.evoila.cf.backup.listener;
 
 import de.evoila.cf.backup.interfaces.BackupCleanupEventInterface;
+import de.evoila.cf.backup.interfaces.BackupJobResultInterface;
+import de.evoila.cf.backup.interfaces.RestoreJobResultInterface;
+import de.evoila.cf.backup.model.agent.response.AgentExecutionResponse;
+import de.evoila.cf.backup.model.agent.response.BackupResultEvent;
+import de.evoila.cf.backup.model.agent.response.RestoreResultEvent;
 import de.evoila.cf.backup.model.api.AbstractJob;
 import de.evoila.cf.backup.model.messages.BackupCleanupResultEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -22,18 +27,22 @@ import java.util.Map;
 
 @Component
 @EnableKafka
-public class BackupCleanupEventListner {
-        private static final Logger log = LoggerFactory.getLogger(BackupCleanupEventListner.class);
+public class BackupJobResultListner {
+        private static final Logger log = LoggerFactory.getLogger(BackupJobResultListner.class);
         private KafkaProperties kafkaProperties;
-        private BackupCleanupEventInterface backupCleanupEventInterface;
+        private BackupJobResultInterface backupJobResultInterface;
+        private RestoreJobResultInterface restoreJobResultInterface;
 
-        public BackupCleanupEventListner(KafkaProperties kafkaProperties, BackupCleanupEventInterface backupCleanupEventInterface) {
+        public BackupJobResultListner(KafkaProperties kafkaProperties,
+                                      BackupJobResultInterface backupJobResultInterface,
+                                      RestoreJobResultInterface restoreJobResultInterface) {
                 this.kafkaProperties = kafkaProperties;
-                this.backupCleanupEventInterface = backupCleanupEventInterface;
+                this.backupJobResultInterface = backupJobResultInterface;
+                this.restoreJobResultInterface = restoreJobResultInterface;
         }
 
         @Bean
-        public DefaultKafkaConsumerFactory<String, BackupCleanupResultEvent> backupCleanupEventConsumerFactory() {
+        public DefaultKafkaConsumerFactory<String, AgentExecutionResponse> backupJobResultLogConsumerFactory() {
                 Map<String, Object> config = kafkaProperties.buildConsumerProperties();
                 config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
                 config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -41,27 +50,32 @@ public class BackupCleanupEventListner {
                 config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringDeserializer.class);
                 config.put(JsonDeserializer.VALUE_DEFAULT_TYPE,AbstractJob.class);
                 config.put(JsonDeserializer.KEY_DEFAULT_TYPE,String.class);
-                config.put(JsonDeserializer.TRUSTED_PACKAGES,"de.evoila.cf.backup.model.messages");
+                config.put(JsonDeserializer.TRUSTED_PACKAGES,"de.evoila.cf.backup.model.agent.response");
 
                 return new DefaultKafkaConsumerFactory<>(config);
         }
 
         @Bean
-        public ConcurrentKafkaListenerContainerFactory<String, BackupCleanupResultEvent> backupCleanupEventKafkaListenerContainerFactory() {
+        public ConcurrentKafkaListenerContainerFactory<String, AgentExecutionResponse> backupJobResultLogKafkaListenerContainerFactory() {
 
-                ConcurrentKafkaListenerContainerFactory<String, BackupCleanupResultEvent> factory =
+                ConcurrentKafkaListenerContainerFactory<String, AgentExecutionResponse> factory =
                         new ConcurrentKafkaListenerContainerFactory<>();
-                factory.setConsumerFactory(backupCleanupEventConsumerFactory());
+                factory.setConsumerFactory(backupJobResultLogConsumerFactory());
                 factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
                 return factory;
         }
 
         @KafkaListener(
-                topicPattern = "Backup-CleanupResult",
-                containerFactory = "backupCleanupEventKafkaListenerContainerFactory",
+                topicPattern = "Backup-JobResultLogs",
+                containerFactory = "backupJobResultLogKafkaListenerContainerFactory",
                 groupId = "${kafka.manager.group-id}"
         )
-        public void listen(@Payload BackupCleanupResultEvent backupCleanupEvent, Acknowledgment ack) {
-                backupCleanupEventInterface.receiveBackupCleanupEvent(backupCleanupEvent, ack);
+
+        public void listen(@Payload AgentExecutionResponse agentExecutionResponse, Acknowledgment ack) {
+                if (agentExecutionResponse.getClass().equals(BackupResultEvent.class)){
+                        backupJobResultInterface.receiveBackupJobResult((BackupResultEvent) agentExecutionResponse, ack);
+                } else if (agentExecutionResponse.getClass().equals(RestoreResultEvent.class)){
+                        restoreJobResultInterface.receiveRestoreJobResult((RestoreResultEvent) agentExecutionResponse, ack);
+                }
         }
 }

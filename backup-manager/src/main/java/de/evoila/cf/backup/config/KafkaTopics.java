@@ -42,7 +42,7 @@ public class KafkaTopics {
 
     @Bean
     public NewTopic backupCleanupResponse() {
-        return TopicBuilder.name("BackupCleanupResponse")
+        return TopicBuilder.name("Backup-CleanupResponse")
                 .partitions(backupKafkaBean.getPartition())
                 .replicas(backupKafkaBean.getReplication())
                 .config("retention.ms", Integer.toString(backupKafkaBean.getRetention()))
@@ -51,7 +51,7 @@ public class KafkaTopics {
 
     @Bean
     public NewTopic jobResponse() {
-        return TopicBuilder.name("JobResponse")
+        return TopicBuilder.name("Backup-JobResultLogs")
                 .partitions(backupKafkaBean.getPartition())
                 .replicas(backupKafkaBean.getReplication())
                 .config("retention.ms", Integer.toString(backupKafkaBean.getRetention()))
@@ -60,7 +60,7 @@ public class KafkaTopics {
 
     @Bean
     public NewTopic jobResponseDetail() {
-        return TopicBuilder.name("JobResponse-Detail")
+        return TopicBuilder.name("Backup-JobResult")
                 .partitions(backupKafkaBean.getPartition())
                 .replicas(backupKafkaBean.getReplication())
                 .config("retention.ms", Integer.toString(backupKafkaBean.getRetention()))

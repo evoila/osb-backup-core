@@ -4,8 +4,8 @@ import de.evoila.cf.backup.model.api.BackupJob;
 
 public class BackupResultEvent extends  AgentBackupResponse {
 
-    String item;
-    BackupJob backupJob;
+    private String item;
+    private BackupJob backupJob;
 
     public String getItem() {
         return item;
@@ -21,6 +21,14 @@ public class BackupResultEvent extends  AgentBackupResponse {
 
     public void setBackupJob(BackupJob backupJob) {
         this.backupJob = backupJob;
+    }
+
+    BackupResultEvent(){
+
+    }
+
+    public BackupResultEvent(AgentBackupResponse agentBackupResponse){
+        super(agentBackupResponse);
     }
 
 }
