@@ -3,6 +3,8 @@
  */
 package de.evoila.cf.backup.clients;
 
+import de.evoila.cf.backup.model.agent.response.AgentBackupResponse;
+import de.evoila.cf.backup.model.api.BackupJob;
 import de.evoila.cf.backup.model.api.file.S3FileDestination;
 import io.minio.*;
 import io.minio.errors.*;
@@ -240,5 +242,29 @@ public class S3Client implements FileClient {
     public void delete(S3FileDestination s3FileDestination) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         delete(s3FileDestination.getBucket(),
                 s3FileDestination.getFilenamePrefix() + s3FileDestination.getFilename());
+    }
+    
+    /**
+     * Delete an file from the S3 cloud storage.
+     *
+     * @param  s3FileDestination with information to bucket and filename
+     * @throws IOException
+     * @throws InvalidKeyException
+     * @throws InvalidResponseException
+     * @throws InsufficientDataException
+     * @throws NoSuchAlgorithmException
+     * @throws ServerException
+     * @throws InternalException
+     * @throws XmlParserException
+     * @throws ErrorResponseException
+     */
+    public void delete(BackupJob backupJob) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        S3FileDestination s3FileDestination = (S3FileDestination) backupJob.getDestination();
+        for (var entry:backupJob.getAgentExecutionReponses().entrySet()){
+            String filenamePrefix = ((AgentBackupResponse) entry.getValue()).getFilenamePrefix();
+            String filename = ((AgentBackupResponse) entry.getValue()).getFilename();
+            delete(s3FileDestination.getBucket(),
+                    filenamePrefix + filename );
+        }
     }
 }

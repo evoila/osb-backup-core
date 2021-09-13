@@ -9,6 +9,10 @@ public class S3BackupResponseEvent extends AgentBackupResponse {
 
     private String bucket;
 
+    public S3BackupResponseEvent(){
+        super();
+    }
+
     public String getRegion() {
         return region;
     }

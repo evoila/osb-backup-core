@@ -31,6 +31,7 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -81,41 +82,52 @@ public class AbstractRequestListner {
                 return factory;
         }
 
+
         @KafkaListener(
                 topicPattern = "Backup-JobRequest-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.getServiceIdsWithoutHyphen(),\"|\")})-.*",
                 containerFactory = "abstractRequestKafkaListenerContainerFactory",
                 groupId = "${kafka.backup.group-id}"
         )
         public void listen(@Payload AbstractRequest abstractRequest, Acknowledgment ack) {
-                ServiceInstance serviceInstance;
-                Plan plan;
-                if (abstractRequest.getOperation().equals(OperationType.BACKUP)) {
-                        BackupRequestEvent backupRequestEvent = (BackupRequestEvent)abstractRequest;
-                        serviceInstance = backupRequestEvent.getBackup().getServiceInstance();
-                        try {
-                                plan = serviceDefinitionRepository.getPlan(serviceInstance.getServiceDefinitionId(),serviceInstance.getPlanId());
-                                backupPlatformService.getBackupPlatform(plan.getMetadata().getBackup().getPlatform()).backup(backupRequestEvent, serviceInstance, plan);
-                        } catch (ServiceDefinitionDoesNotExistException e) {
-                                e.printStackTrace();
-                        } catch (ServiceDefinitionPlanDoesNotExistException e) {
-                                e.printStackTrace();
-                        } finally {
-                                ack.acknowledge();
+                new Thread() {
+                        @Override
+                        public void run() {
+
+                                ServiceInstance serviceInstance;
+                                Plan plan;
+                                if (abstractRequest.getOperation().
+
+                                        equals(OperationType.BACKUP)) {
+                                        BackupRequestEvent backupRequestEvent = (BackupRequestEvent) abstractRequest;
+                                        serviceInstance = backupRequestEvent.getBackup().getServiceInstance();
+                                        try {
+                                                plan = serviceDefinitionRepository.getPlan(serviceInstance.getServiceDefinitionId(), serviceInstance.getPlanId());
+                                                backupPlatformService.getBackupPlatform(plan.getMetadata().getBackup().getPlatform()).backup(backupRequestEvent, serviceInstance, plan);
+                                        } catch (ServiceDefinitionDoesNotExistException e) {
+                                                e.printStackTrace();
+                                        } catch (ServiceDefinitionPlanDoesNotExistException e) {
+                                                e.printStackTrace();
+                                        } finally {
+                                                ack.acknowledge();
+                                        }
+                                } else if (abstractRequest.getOperation().
+
+                                        equals(OperationType.RESTORE)) {
+                                        RestoreRequestEvent restoreRequestEvent = (RestoreRequestEvent) abstractRequest;
+                                        serviceInstance = restoreRequestEvent.getRestore().getServiceInstance();
+                                        try {
+                                                plan = serviceDefinitionRepository.getPlan(serviceInstance.getServiceDefinitionId(), serviceInstance.getPlanId());
+                                                backupPlatformService.getBackupPlatform(plan.getMetadata().getBackup().getPlatform()).restore(restoreRequestEvent, serviceInstance, plan);
+                                        } catch (ServiceDefinitionDoesNotExistException e) {
+                                                e.printStackTrace();
+                                        } catch (ServiceDefinitionPlanDoesNotExistException e) {
+                                                e.printStackTrace();
+                                        } finally {
+                                                ack.acknowledge();
+                                        }
+                                }
                         }
-                }else if (abstractRequest.getOperation().equals(OperationType.RESTORE)) {
-                        RestoreRequestEvent restoreRequestEvent = (RestoreRequestEvent)abstractRequest;
-                        serviceInstance = restoreRequestEvent.getRestore().getServiceInstance();
-                        try {
-                                plan = serviceDefinitionRepository.getPlan(serviceInstance.getServiceDefinitionId(),serviceInstance.getPlanId());
-                                backupPlatformService.getBackupPlatform(plan.getMetadata().getBackup().getPlatform()).restore(restoreRequestEvent, serviceInstance, plan);
-                        } catch (ServiceDefinitionDoesNotExistException e) {
-                                e.printStackTrace();
-                        } catch (ServiceDefinitionPlanDoesNotExistException e) {
-                                e.printStackTrace();
-                        } finally {
-                                ack.acknowledge();
-                        }
-                }
+                }.start();
                 ack.acknowledge();
         }
 }

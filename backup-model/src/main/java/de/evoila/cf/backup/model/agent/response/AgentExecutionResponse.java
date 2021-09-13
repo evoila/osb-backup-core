@@ -15,9 +15,9 @@ public class AgentExecutionResponse {
 
     protected JobStatus status;
 
-    protected String message;
+    protected String message = "";
 
-    protected String errorMessage;
+    protected String errorMessage = "";
 
     protected Date startTime;
 
@@ -71,5 +71,18 @@ public class AgentExecutionResponse {
 
     public void setExecutionTime(long executionTime) {
         this.executionTime = executionTime;
+    }
+
+    AgentExecutionResponse(){
+
+    }
+
+    AgentExecutionResponse(AgentExecutionResponse agentExecutionResponse){
+        this.endTime = agentExecutionResponse.endTime;
+        this.executionTime = agentExecutionResponse.executionTime;
+        this.errorMessage = agentExecutionResponse.errorMessage;
+        this.message = agentExecutionResponse.message;
+        this.startTime = agentExecutionResponse.startTime;
+        this.status = agentExecutionResponse.status;
     }
 }

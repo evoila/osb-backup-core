@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AutoConfigureAfter(BackupJob.class)
-public class BackupCleanupEventProducerService {
+public class BackupCleanupResultEventProducerService {
     KafkaTemplate<String, BackupCleanupResultEvent> backupCleanupEventKafkaTemplate;
 
-    BackupCleanupEventProducerService(KafkaTemplate<String, BackupCleanupResultEvent> backupCleanupEventKafkaTemplate) {
+    BackupCleanupResultEventProducerService(KafkaTemplate<String, BackupCleanupResultEvent> backupCleanupEventKafkaTemplate) {
         this.backupCleanupEventKafkaTemplate = backupCleanupEventKafkaTemplate;
     }
 

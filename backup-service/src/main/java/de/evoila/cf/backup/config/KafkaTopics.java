@@ -43,7 +43,7 @@ public class KafkaTopics {
         List<NewTopic> newTopics = new ArrayList<NewTopic>();
         for (String serviceId: catalogService.getServiceIdsWithoutHyphen()) {
             newTopics.add(
-                    TopicBuilder.name("Backup-FileDistination-" + serviceId)
+                    TopicBuilder.name("Backup-FileDestination-" + serviceId)
                             .partitions(backupKafkaBean.getPartition())
                             .replicas(backupKafkaBean.getReplication())
                             .config("retention.ms", Integer.toString(backupKafkaBean.getRetention()))

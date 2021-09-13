@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import de.evoila.cf.backup.model.enums.OperationType;
+import org.bson.types.ObjectId;
+
+import java.util.Map;
 
 /**
  * @author Johannes Hiemer.
@@ -19,23 +22,16 @@ import de.evoila.cf.backup.model.enums.OperationType;
 })
 public class AbstractRequest {
 
-
-    protected String id;
-
     protected  boolean compression;
 
     protected String encryptionKey;
 
+    protected Map<String, String> items;
+
+    protected String filePath;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     protected OperationType operation;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public boolean isCompression() {
         return compression;
@@ -59,6 +55,30 @@ public class AbstractRequest {
 
     public void setOperation(OperationType operation) {
         this.operation = operation;
+    }
+
+    public void setItems(Map<String, String> items) {
+        this.items = items;
+    }
+
+    public Map<String,String> getItems(){
+        return items;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        if(filePath.isEmpty()) {
+            this.filePath = filePath;
+        } else {
+            if (filePath.endsWith("/")) {
+                this.filePath = filePath;
+            } else {
+                this.filePath = filePath;
+            }
+        }
     }
 
 }
