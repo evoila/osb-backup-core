@@ -57,7 +57,7 @@ public class BackupCleanupEventListner {
         }
 
         @KafkaListener(
-                topicPattern = "BackupCleanupResult",
+                topicPattern = "Backup-CleanupResult",
                 containerFactory = "backupCleanupEventKafkaListenerContainerFactory",
                 groupId = "${kafka.manager.group-id}"
         )

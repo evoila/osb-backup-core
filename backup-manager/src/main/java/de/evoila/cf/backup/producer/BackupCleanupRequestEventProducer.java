@@ -46,4 +46,5 @@ public class BackupCleanupRequestEventProducer {
         public KafkaTemplate<String, BackupCleanupRequestEvent> backupCleanupRequestEventKafkaTemplate() {
                 return new KafkaTemplate<>(backupCleanupRequestEventProducerFactory());
         }
+
 }

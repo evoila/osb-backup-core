@@ -1,5 +1,7 @@
 package de.evoila.cf.backup.producer;
 
+import de.evoila.cf.backup.model.api.BackupJob;
+import de.evoila.cf.backup.model.enums.JobStatus;
 import de.evoila.cf.backup.model.messages.BackupCleanupResultEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -43,5 +45,13 @@ public class BackupCleanupResultEventProducer {
         @Bean
         public KafkaTemplate<String, BackupCleanupResultEvent> backupCleanupEventKafkaTemplate() {
                 return new KafkaTemplate<>(backupCleanupEventProducerFactory());
+        }
+
+        public void send(BackupJob backupJob, String result, JobStatus jobStatus){
+                BackupCleanupResultEvent backupCleanupResultEvent = new BackupCleanupResultEvent();
+                backupCleanupResultEvent.setBackupJob(backupJob);
+                backupCleanupResultEvent.setMessage(result);
+                backupCleanupResultEvent.setStatus(jobStatus);
+                backupCleanupEventKafkaTemplate().send("Backup-CleanupResult", backupCleanupResultEvent);
         }
 }
