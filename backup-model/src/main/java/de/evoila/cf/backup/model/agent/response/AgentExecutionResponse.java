@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import de.evoila.cf.backup.model.api.file.S3FileDestination;
 import de.evoila.cf.backup.model.api.file.SwiftFileDestination;
 import de.evoila.cf.backup.model.enums.JobStatus;
+import de.evoila.cf.backup.model.enums.JobType;
 
 import java.util.Date;
 
@@ -23,6 +24,8 @@ import java.util.Date;
 
 public class AgentExecutionResponse {
 
+    protected JobType type;
+
     protected JobStatus status;
 
     protected String message = "";
@@ -34,6 +37,14 @@ public class AgentExecutionResponse {
     protected Date endTime;
 
     protected long executionTime;
+
+    public JobType getType() {
+        return type;
+    }
+
+    public void setType(JobType type) {
+        this.type = type;
+    }
 
     public JobStatus getStatus() {
         return status;
@@ -82,6 +93,8 @@ public class AgentExecutionResponse {
     public void setExecutionTime(long executionTime) {
         this.executionTime = executionTime;
     }
+
+
 
     AgentExecutionResponse(){
 
