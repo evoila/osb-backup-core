@@ -262,10 +262,14 @@ public class S3Client implements FileClient {
     public void delete(BackupJob backupJob) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
         S3FileDestination s3FileDestination = (S3FileDestination) backupJob.getDestination();
         for (var entry:backupJob.getAgentExecutionReponses().entrySet()){
-            String filenamePrefix = ((AgentBackupResponse) entry.getValue()).getFilenamePrefix();
-            String filename = ((AgentBackupResponse) entry.getValue()).getFilename();
-            delete(s3FileDestination.getBucket(),
-                    filenamePrefix + filename );
+            if (entry.getValue().getClass().equals(AgentBackupResponse.class)) {
+                String filenamePrefix = ((AgentBackupResponse) entry.getValue()).getFilenamePrefix();
+                String filename = ((AgentBackupResponse) entry.getValue()).getFilename();
+                delete(s3FileDestination.getBucket(),
+                        filenamePrefix + filename);
+            } else {
+                throw new NoSuchAlgorithmException("Wrong agent response type");
+            }
         }
     }
 }

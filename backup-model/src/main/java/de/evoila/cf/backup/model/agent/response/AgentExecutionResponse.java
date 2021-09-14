@@ -16,15 +16,9 @@ import java.util.Date;
  */
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = AgentBackupResponse.class, name = "BACKUP"),
-        @JsonSubTypes.Type(value = AgentRestoreResponse.class, name = "RESTORE")
-})
+
 
 public class AgentExecutionResponse {
-
-    protected JobType type;
 
     protected JobStatus status;
 
@@ -37,14 +31,6 @@ public class AgentExecutionResponse {
     protected Date endTime;
 
     protected long executionTime;
-
-    public JobType getType() {
-        return type;
-    }
-
-    public void setType(JobType type) {
-        this.type = type;
-    }
 
     public JobStatus getStatus() {
         return status;
