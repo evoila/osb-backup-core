@@ -17,6 +17,11 @@ import java.util.Date;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+@JsonSubTypes({
+        @JsonSubTypes.Type(AgentBackupResponse.class),
+        @JsonSubTypes.Type(AgentRestoreResponse.class) }
+)
 
 public class AgentExecutionResponse {
 
