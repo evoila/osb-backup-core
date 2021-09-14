@@ -4,6 +4,7 @@
 package de.evoila.cf.backup.clients;
 
 import de.evoila.cf.backup.model.agent.response.AgentBackupResponse;
+import de.evoila.cf.backup.model.agent.response.AgentExecutionResponse;
 import de.evoila.cf.backup.model.api.BackupJob;
 import de.evoila.cf.backup.model.api.file.S3FileDestination;
 import io.minio.*;

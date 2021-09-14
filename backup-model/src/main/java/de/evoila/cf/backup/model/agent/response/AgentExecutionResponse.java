@@ -1,7 +1,11 @@
 package de.evoila.cf.backup.model.agent.response;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import de.evoila.cf.backup.model.api.file.S3FileDestination;
+import de.evoila.cf.backup.model.api.file.SwiftFileDestination;
 import de.evoila.cf.backup.model.enums.JobStatus;
 
 import java.util.Date;
@@ -11,6 +15,12 @@ import java.util.Date;
  */
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = AgentBackupResponse.class, name = "BACKUP"),
+        @JsonSubTypes.Type(value = AgentRestoreResponse.class, name = "RESTORE")
+})
+
 public class AgentExecutionResponse {
 
     protected JobStatus status;
