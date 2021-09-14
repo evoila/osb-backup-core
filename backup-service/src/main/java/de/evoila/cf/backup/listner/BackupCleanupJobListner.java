@@ -6,6 +6,7 @@ import de.evoila.cf.backup.model.api.BackupJob;
 import de.evoila.cf.backup.model.messages.BackupCleanupRequestEvent;
 import de.evoila.cf.backup.model.messages.BackupPlanEvent;
 import de.evoila.cf.backup.repository.BackupPlatformRepository;
+import de.evoila.cf.backup.service.BackupPlatformService;
 import de.evoila.cf.broker.exception.ServiceDefinitionDoesNotExistException;
 import de.evoila.cf.broker.exception.ServiceDefinitionPlanDoesNotExistException;
 import de.evoila.cf.broker.model.ServiceInstance;
@@ -36,11 +37,15 @@ import java.util.Map;
 public class BackupCleanupJobListner {
         private static final Logger log = LoggerFactory.getLogger(BackupCleanupJobListner.class);
         private KafkaProperties kafkaProperties;
-        private BackupPlatformRepository backupPlatformRepository;
+        private BackupPlatformService backupPlatformService;
         private ServiceDefinitionRepository serviceDefinitionRepository;
 
-        public BackupCleanupJobListner(KafkaProperties kafkaProperties) {
+        public BackupCleanupJobListner(KafkaProperties kafkaProperties,
+                                       BackupPlatformService backupPlatformService,
+                                       ServiceDefinitionRepository serviceDefinitionRepository) {
                 this.kafkaProperties = kafkaProperties;
+                this.backupPlatformService = backupPlatformService;
+                this.serviceDefinitionRepository = serviceDefinitionRepository;
         }
 
         @Bean
@@ -69,7 +74,7 @@ public class BackupCleanupJobListner {
         }
 
         @KafkaListener(
-                topicPattern = "Backup-CleanupJob-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.getServiceIdsWithoutHyphen(),\"|\")})-.*",
+                topicPattern = "Backup-CleanupJob-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.getServiceIdsWithoutHyphen(),\"|\")})",
                 containerFactory = "backupCleanupRequestKafkaListenerContainerFactory",
                 groupId = "${kafka.backup.group-id}"
         )
@@ -79,7 +84,7 @@ public class BackupCleanupJobListner {
                 serviceInstance = backupCleanupRequestEvent.getBackupJob().getServiceInstance();
                 try {
                         plan = serviceDefinitionRepository.getPlan(serviceInstance.getServiceDefinitionId(),serviceInstance.getPlanId());
-                        backupPlatformRepository.getBackupPlatformService(plan.getMetadata().getBackup().getPlatform()).cleanupBackup(backupCleanupRequestEvent.getBackupJob(), serviceInstance, plan);
+                        backupPlatformService.getBackupPlatform(plan.getMetadata().getBackup().getPlatform()).cleanupBackup(backupCleanupRequestEvent.getBackupJob(), serviceInstance, plan);
                 } catch (ServiceDefinitionDoesNotExistException e) {
                         e.printStackTrace();
                 } catch (ServiceDefinitionPlanDoesNotExistException e) {
