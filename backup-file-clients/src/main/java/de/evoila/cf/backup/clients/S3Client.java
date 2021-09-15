@@ -10,6 +10,9 @@ import de.evoila.cf.backup.model.api.file.S3FileDestination;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.http.Method;
+import io.minio.messages.DeleteError;
+import io.minio.messages.DeleteObject;
+import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -19,6 +22,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @author Johannes Hiemer.
@@ -216,13 +221,16 @@ public class S3Client implements FileClient {
      * @throws XmlParserException
      * @throws ErrorResponseException
      */
-    public void delete(String bucket, String filename) throws IOException, InvalidKeyException, InvalidResponseException, InsufficientDataException, NoSuchAlgorithmException, ServerException, InternalException, XmlParserException, ErrorResponseException {
+    public void delete(String bucket, String filename) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
 
-        client.removeObject(RemoveObjectArgs.builder()
+        Iterable<Result<DeleteError>> results = client.removeObjects(RemoveObjectsArgs.builder()
                 .bucket(bucket)
-                .object(filename)
+                .objects(Arrays.asList(new DeleteObject(filename)))
                 .build());
 
+        for (Result<DeleteError>result: results) {
+            log.info("File deleted result: " + result.get());
+        }
         log.info("File deleted: " + bucket + "/" + filename);
     }
 
@@ -260,10 +268,14 @@ public class S3Client implements FileClient {
      * @throws ErrorResponseException
      */
     public void delete(BackupJob backupJob) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        S3FileDestination s3FileDestination = (S3FileDestination) backupJob.getDestination();
+        S3FileDestination s3FileDestination = (S3FileDestination) backupJob.getBackupPlan().getFileDestination();
         for (var entry:backupJob.getAgentExecutionReponses().entrySet()){
                 String filenamePrefix = ((AgentBackupResponse) entry.getValue()).getFilenamePrefix();
                 String filename = ((AgentBackupResponse) entry.getValue()).getFilename();
+                if (filenamePrefix.isEmpty()){
+                    delete(s3FileDestination.getBucket(),
+                            s3FileDestination.getIdAsString() + "/" + filename);
+                }
                 delete(s3FileDestination.getBucket(),
                         filenamePrefix + filename);
         }
