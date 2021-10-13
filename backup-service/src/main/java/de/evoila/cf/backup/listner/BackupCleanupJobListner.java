@@ -74,7 +74,7 @@ public class BackupCleanupJobListner {
         }
 
         @KafkaListener(
-                topicPattern = "Backup-CleanupJob-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.getServiceIdsWithoutHyphen(),\"|\")})",
+                topicPattern = "Backup-CleanupRequest-(#{T(org.thymeleaf.util.StringUtils).join(catalogServiceImpl.getServiceIdsWithoutHyphen(),\"|\")})",
                 containerFactory = "backupCleanupRequestKafkaListenerContainerFactory",
                 groupId = "${kafka.backup.group-id}"
         )

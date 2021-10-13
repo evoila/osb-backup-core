@@ -223,14 +223,11 @@ public class S3Client implements FileClient {
      */
     public void delete(String bucket, String filename) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
 
-        Iterable<Result<DeleteError>> results = client.removeObjects(RemoveObjectsArgs.builder()
+        client.removeObject(RemoveObjectArgs.builder()
                 .bucket(bucket)
-                .objects(Arrays.asList(new DeleteObject(filename)))
+                .object(filename)
                 .build());
 
-        for (Result<DeleteError>result: results) {
-            log.info("File deleted result: " + result.get());
-        }
         log.info("File deleted: " + bucket + "/" + filename);
     }
 
@@ -272,10 +269,6 @@ public class S3Client implements FileClient {
         for (var entry:backupJob.getAgentExecutionReponses().entrySet()){
                 String filenamePrefix = ((AgentBackupResponse) entry.getValue()).getFilenamePrefix();
                 String filename = ((AgentBackupResponse) entry.getValue()).getFilename();
-                if (filenamePrefix.isEmpty()){
-                    delete(s3FileDestination.getBucket(),
-                            s3FileDestination.getIdAsString() + "/" + filename);
-                }
                 delete(s3FileDestination.getBucket(),
                         filenamePrefix + filename);
         }
